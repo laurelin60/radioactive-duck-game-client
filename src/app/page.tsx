@@ -194,7 +194,7 @@ export default function Home() {
                                 signList[currentSign].alt ===
                                 estimatedGestures.gestures[maxConfidence].name
                             ) {
-                                currentSign++;
+                                // currentSign++;
                                 wsClient.send(
                                     JSON.stringify({
                                         type: "killDuck",
