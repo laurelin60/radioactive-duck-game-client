@@ -21,7 +21,7 @@ export default function Home() {
     const webcamRef = useRef<Webcam | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    const [camState, setCamState] = useState(true);
+    const [camState, setCamState] = useState(false);
 
     const [sign, setSign] = useState<string>("");
     const [signImage, setSignImage] = useState<string>("");
@@ -222,67 +222,116 @@ export default function Home() {
 
     return (
         <>
-            <main className="min-h-[100vh] max-h-[100vh]">
-                <div className="flex items-center flex-col h-full wrapper py-0">
-                    <div className="z-10 pt-24">
-                        <h1 className="text-4xl text-center font-bold">
-                            Radioactive Duck Game 🦆
+            <main className="min-h-[100vh]">
+                <div className="flex items-center flex-col w-full h-full py-0">
+                    <div className="z-10 pt-20 space-y-4">
+                        <h1 className="text-5xl text-center font-bold">
+                            ☢️ Radioactive Duck Game 🦆
                         </h1>
-                        <p>Current Instruction: {instructionText}</p>
+                        <p className="text-xl font-medium text-center">
+                            Current Instruction: {instructionText}
+                        </p>
                     </div>
 
                     <div
                         id="webcam-container"
-                        className="fixed w-full h-full mx-auto flex-center"
+                        className="mx-auto mt-12 w-full h-webcamHeight flex-center z-50"
                     >
-                        {camState ? (
-                            <Webcam
-                                id="webcam"
-                                className="fixed h-[50%] w-[50%] flex mx-auto object-cover -scale-x-100"
-                                ref={webcamRef}
-                            />
-                        ) : (
-                            <div id="webcam" className="bg-black" />
-                        )}
+                        <div className="space-x-4 flex justify-center h-webcamHeight w-full z-50">
+                            <div className="h-full">
+                                {camState ? (
+                                    <div className="relative">
+                                        <Webcam
+                                            id="webcam"
+                                            className="h-webcamHeight w-webcamWidth flex object-cover -scale-x-100 border-2 border-black"
+                                            ref={webcamRef}
+                                        />
 
-                        {/* At bottom of page, indicates what the model is "seeing" */}
-                        {sign ? (
-                            <div className="absolute flex-center flex-col mx-auto right-[calc(50% - 50px)] bottom-[140px] text-center z-50 mx-auto left-1/2 -translate-x-1/2">
-                                <div className="text-white text-lg mb-1">
-                                    detected gestures
+                                        {/* Renders the hand tracing */}
+                                        <canvas
+                                            id="gesture-canvas"
+                                            className="absolute top-0 left-0 h-full w-webcamWidth object-cover z-10 -scale-x-100"
+                                            ref={canvasRef}
+                                        />
+
+                                        <div className="flex w-full justify-between absolute">
+                                            {signImage && (
+                                                <div className="flex flex-col">
+                                                    {/* Indicates the current letter */}
+                                                    <p className="text-xl font-semibold">
+                                                        Sign This:
+                                                    </p>
+                                                    <img
+                                                        className={cn(
+                                                            "h-40 object-contain border-none bg-black bg-center",
+                                                        )}
+                                                        id="emojimage"
+                                                        src={signImage}
+                                                        alt="signImage"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Indicates what the model is "seeing" */}
+                                            {sign ? (
+                                                <div className="flex-center flex-col text-center">
+                                                    <div className="text-white text-lg mb-1">
+                                                        Detected Gesture
+                                                    </div>
+                                                    <img
+                                                        alt="signImage"
+                                                        src={
+                                                            // @ts-expect-error src does exist
+                                                            Signimage[sign]?.src
+                                                        }
+                                                        style={{
+                                                            height: 30,
+                                                        }}
+                                                    />
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        id="webcam"
+                                        className="bg-black h-full w-webcamWidth"
+                                    />
+                                )}
+
+                                <div
+                                    id="start-button"
+                                    className="flex-center pt-4 gap-8 flex-row mx-auto z-[100]"
+                                >
+                                    <Button
+                                        onClick={handleCamera}
+                                        className="bg-orange-500 hover:bg-orange-500/80 z-[100]"
+                                    >
+                                        {camState ? (
+                                            <div className="space-x-4 flex">
+                                                <p>Turn Off</p>{" "}
+                                                <RiCameraOffFill size={20} />
+                                            </div>
+                                        ) : (
+                                            <div className="space-x-4 flex">
+                                                <p>Turn On</p>{" "}
+                                                <RiCameraFill size={20} />
+                                            </div>
+                                        )}
+                                    </Button>
                                 </div>
-                                <img
-                                    alt="signImage"
-                                    // @ts-expect-error src does exist
-                                    src={Signimage[sign]?.src}
-                                    style={{
-                                        height: 30,
-                                    }}
+                            </div>
+
+                            {/* Game embed */}
+                            <div className="w-gameWidth h-gameHeight bg-green-500 overflow-auto flex-center">
+                                <iframe
+                                    allow="autoplay; fullscreen; geolocation; microphone; camera; midi"
+                                    src="http://localhost:8000/index.html"
+                                    className="w-gameWidth h-gameHeightFooter overflow-auto"
                                 />
                             </div>
-                        ) : (
-                            " "
-                        )}
-
-                        {/* Renders the hand tracing */}
-                        <canvas
-                            id="gesture-canvas"
-                            className="fixed h-[50%] w-[50%] object-cover z-10 -scale-x-100 left-1/2 -translate-x-1/2"
-                            ref={canvasRef}
-                        />
+                        </div>
                     </div>
-
-                    {/* At top of page, indicates the current letter */}
-                    {signImage && (
-                        <img
-                            className={cn(
-                                "h-40 object-contain border-none z-50 bg-black bg-center",
-                            )}
-                            id="emojimage"
-                            src={signImage}
-                            alt="signImage"
-                        />
-                    )}
 
                     {/* <pre
                         className="pose-data"
@@ -295,26 +344,6 @@ export default function Home() {
                     >
                         Pose data
                     </pre> */}
-                </div>
-
-                <div
-                    id="start-button"
-                    className="flex gap-8 flex-row fixed self-center bottom-20 mx-auto left-1/2 -translate-x-1/2 z-20"
-                >
-                    <Button
-                        onClick={handleCamera}
-                        className="bg-orange-500 hover:bg-orange-500/80"
-                    >
-                        {camState ? (
-                            <div className="space-x-4 flex">
-                                <p>Turn Off</p> <RiCameraOffFill size={20} />
-                            </div>
-                        ) : (
-                            <div className="space-x-4 flex">
-                                <p>Turn On</p> <RiCameraFill size={20} />
-                            </div>
-                        )}
-                    </Button>
                 </div>
             </main>
         </>

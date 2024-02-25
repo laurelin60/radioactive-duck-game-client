@@ -97,6 +97,16 @@ const config = {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
             },
+            spacing: {
+                gameWidth: "960px",
+                gameHeight: "540px",
+                gameHeightFooter: "447px",
+                webcamWidth: "540px",
+                webcamHeight: "270px",
+            },
+            fontFamily: {
+                orbitron: ["Orbitron"],
+            },
         },
     },
     plugins: [
