@@ -264,7 +264,7 @@ export default function Home() {
             <main className="min-h-[100vh]">
                 <div className="flex items-center flex-col w-full h-full py-0">
                     <div className="z-10 pt-20 space-y-4">
-                        <h1 className="text-5xl text-center font-bold">
+                        <h1 className="text-5xl text-center font-bold drop-shadow-[0_2px_8px_rgba(248,249,0,0.95)] text-white">
                             ☢️ Radioactive Duck Game 🦆
                         </h1>
                         <p className="text-xl font-medium text-center">
@@ -282,7 +282,7 @@ export default function Home() {
                                     <div className="relative">
                                         <Webcam
                                             id="webcam"
-                                            className="h-webcamHeight w-webcamWidth flex object-cover -scale-x-100 border-2 border-black"
+                                            className="h-webcamHeight w-webcamWidth flex object-cover -scale-x-100 drop-shadow-[0_4px_16px_rgba(248,249,0,0.95)] rounded-xl"
                                             ref={webcamRef}
                                         />
 
@@ -293,7 +293,7 @@ export default function Home() {
                                             ref={canvasRef}
                                         />
 
-                                        <div className="flex w-full justify-between absolute">
+                                        <div className="flex w-full justify-between absolute pt-6">
                                             {signImage && (
                                                 <div className="flex flex-col">
                                                     {/* Indicates the current letter */}
@@ -334,7 +334,7 @@ export default function Home() {
                                 ) : (
                                     <div
                                         id="webcam"
-                                        className="bg-black h-full w-webcamWidth"
+                                        className="bg-black h-full w-webcamWidth drop-shadow-[0_4px_16px_rgba(248,249,0,0.95)] rounded-xl"
                                     />
                                 )}
 
