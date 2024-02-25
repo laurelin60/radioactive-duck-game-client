@@ -51,11 +51,26 @@ export default function Home() {
     };
 
     const handleSignList = () => {
-        signList = shuffle(Signpass);
+        const fullyhacks = [
+            Signpass[5], // F
+            Signpass[20], // U
+            Signpass[11], // L
+            Signpass[11], // L
+            Signpass[24], // Y
+            Signpass[7], // H
+            Signpass[0], // A
+            Signpass[2], // C
+            Signpass[10], // K
+            Signpass[18], // S
+        ];
+
+        signList = fullyhacks;
+
+        // signList = shuffle(Signpass);
     };
 
     /* any is used to avoid errors w/ build */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     function shuffle(a: { src: any; alt: string }[]) {
         for (let i = a.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -216,11 +231,14 @@ export default function Home() {
                         <p>Current Instruction: {instructionText}</p>
                     </div>
 
-                    <div id="webcam-container" className="fixed w-full h-full">
+                    <div
+                        id="webcam-container"
+                        className="fixed w-full h-full mx-auto flex-center"
+                    >
                         {camState ? (
                             <Webcam
                                 id="webcam"
-                                className="fixed h-full w-full object-cover -scale-x-100"
+                                className="fixed h-[50%] w-[50%] flex mx-auto object-cover -scale-x-100"
                                 ref={webcamRef}
                             />
                         ) : (
@@ -245,14 +263,14 @@ export default function Home() {
                         ) : (
                             " "
                         )}
-                    </div>
 
-                    {/* Renders the hand tracing */}
-                    <canvas
-                        id="gesture-canvas"
-                        className="fixed h-full w-full object-cover z-10 -scale-x-100"
-                        ref={canvasRef}
-                    />
+                        {/* Renders the hand tracing */}
+                        <canvas
+                            id="gesture-canvas"
+                            className="fixed h-[50%] w-[50%] object-cover z-10 -scale-x-100 left-1/2 -translate-x-1/2"
+                            ref={canvasRef}
+                        />
+                    </div>
 
                     {/* At top of page, indicates the current letter */}
                     {signImage && (
