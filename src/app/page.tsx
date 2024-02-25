@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 // @ts-expect-error can't find declaration file
 import * as handpose from "@tensorflow-models/handpose";
 import * as fp from "fingerpose";
 
 import "@tensorflow/tfjs-backend-webgl";
+import "@tensorflow/tfjs-backend-cpu";
 
+import { cn } from "@/lib/utils";
 import { RiCameraFill, RiCameraOffFill } from "react-icons/ri";
 import Webcam from "react-webcam";
 
@@ -22,9 +23,12 @@ export default function Home() {
 
     const [camState, setCamState] = useState(true);
 
-    const [sign, setSign] = useState<string | null>(null);
+    const [sign, setSign] = useState<string>("");
+    const [signImage, setSignImage] = useState<string>("");
+    const [instructionText, setInstructionText] = useState("");
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [signList, setSignList] = useState<string | any[]>([]);
+    let signList: string | any[];
 
     let currentSign = 0;
 
@@ -37,6 +41,7 @@ export default function Home() {
      * 3. Runs ML model every X milliseconds
      */
     const runHandpose = async () => {
+        setInstructionText("Loading models...");
         const net = await handpose.load();
         handleSignList();
 
@@ -46,7 +51,7 @@ export default function Home() {
     };
 
     const handleSignList = () => {
-        setSignList(shuffle(Signpass));
+        signList = shuffle(Signpass);
     };
 
     /* any is used to avoid errors w/ build */
@@ -121,8 +126,9 @@ export default function Home() {
                 // document.querySelector('.pose-data').innerHTML =JSON.stringify(estimatedGestures.poseData, null, 2);
 
                 if (gamestate === "started") {
-                    // document.querySelector("#app-title").innerText =
-                    //     "Make a 👍 gesture with your hand to start";
+                    setInstructionText(
+                        "Make a 👍 gesture with your hand to start",
+                    );
                 }
 
                 if (
@@ -130,13 +136,14 @@ export default function Home() {
                     estimatedGestures.gestures.length > 0
                 ) {
                     const confidence = estimatedGestures.gestures.map(
+                        // @ts-expect-error confidence does exist
                         (p) => p.confidence,
                     );
                     const maxConfidence = confidence.indexOf(
                         Math.max.apply(undefined, confidence),
                     );
 
-                    //setting up game state, looking for thumb emoji
+                    /* Check for thumb emoji to begin game */
                     if (
                         estimatedGestures.gestures[maxConfidence].name ===
                             "thumbs_up" &&
@@ -144,35 +151,24 @@ export default function Home() {
                     ) {
                         handleSignList();
                         gamestate = "played";
-                        // document
-                        //     .getElementById("emojimage")
-                        //     .classList.add("play");
-                        // document.querySelector(".tutor-text").innerText =
-                        //     "make a hand gesture based on letter shown below";
-                    } else if (gamestate === "played") {
-                        // document.querySelector("#app-title").innerText = "";
 
-                        //looping the sign list
+                        setInstructionText(
+                            "make a hand gesture based on letter shown below",
+                        );
+                    } else if (gamestate === "played") {
+                        /* Reset the sign list if completed */
                         if (currentSign === signList.length) {
                             handleSignList();
                             currentSign = 0;
                             return;
                         }
 
-                        // console.log(signList[currentSign].src.src)
-
-                        //game play state
-
+                        /* Gameplay state */
                         if (
                             typeof signList[currentSign].src.src === "string" ||
                             signList[currentSign].src.src instanceof String
                         ) {
-                            // document
-                            //     .getElementById("emojimage")
-                            //     .setAttribute(
-                            //         "src",
-                            //         signList[currentSign].src.src,
-                            //     );
+                            setSignImage(signList[currentSign].src.src);
                             if (
                                 signList[currentSign].alt ===
                                 estimatedGestures.gestures[maxConfidence].name
@@ -211,31 +207,36 @@ export default function Home() {
 
     return (
         <>
-            <main className="bg-[#5784BA] h-[100vh]">
-                <div className="flex-center flex-col wrapper py-0">
-                    <h1 className="text-4xl text-center">
-                        Radioactive Duck Game 🦆
-                    </h1>
+            <main className="bg-[#5784BA] min-h-[100vh] max-h-[100vh]">
+                <div className="flex items-center flex-col h-full wrapper py-0">
+                    <div className="z-10 pt-24">
+                        <h1 className="text-4xl text-center font-bold">
+                            Radioactive Duck Game 🦆
+                        </h1>
+                        <p>Current Instruction: {instructionText}</p>
+                    </div>
 
-                    <div id="webcam-container">
+                    <div id="webcam-container" className="fixed w-full h-full">
                         {camState ? (
-                            <Webcam id="webcam" ref={webcamRef} />
+                            <Webcam
+                                id="webcam"
+                                className="fixed h-full w-full object-cover -scale-x-100"
+                                ref={webcamRef}
+                            />
                         ) : (
                             <div id="webcam" className="bg-black" />
                         )}
 
+                        {/* At bottom of page, indicates what the model is "seeing" */}
                         {sign ? (
-                            <div className="absolute mx-auto right-[calc(50% - 50px)] bottom-[100px] text-center">
+                            <div className="absolute flex-center flex-col mx-auto right-[calc(50% - 50px)] bottom-[100px] text-center z-50 mx-auto left-1/2 -translate-x-1/2">
                                 <div className="text-white text-lg mb-1">
                                     detected gestures
                                 </div>
                                 <img
                                     alt="signImage"
-                                    src={
-                                        Signimage[sign]?.src
-                                            ? Signimage[sign].src
-                                            : "/loveyou_emoji.svg"
-                                    }
+                                    // @ts-expect-error src does exist
+                                    src={Signimage[sign]?.src}
                                     style={{
                                         height: 30,
                                     }}
@@ -246,14 +247,24 @@ export default function Home() {
                         )}
                     </div>
 
-                    <canvas id="gesture-canvas" ref={canvasRef} style={{}} />
-
-                    <Image
-                        className="h-36 object-cover"
-                        id="emojimage"
-                        src={""}
-                        alt="image"
+                    {/* Renders the hand tracing */}
+                    <canvas
+                        id="gesture-canvas"
+                        className="fixed h-full w-full object-cover z-10 -scale-x-100"
+                        ref={canvasRef}
                     />
+
+                    {/* At top of page, indicates the current letter */}
+                    {signImage && (
+                        <img
+                            className={cn(
+                                "h-40 object-contain border-none z-50 bg-black bg-center",
+                            )}
+                            id="emojimage"
+                            src={signImage}
+                            alt="signImage"
+                        />
+                    )}
 
                     {/* <pre
                         className="pose-data"
@@ -268,18 +279,23 @@ export default function Home() {
                     </pre> */}
                 </div>
 
-                <div id="start-button" className="flex-center gap-4 flex-row">
-                    <Button onClick={handleCamera} className="bg-orange-500">
+                <div
+                    id="start-button"
+                    className="flex gap-8 flex-row fixed self-center bottom-10 mx-auto left-1/2 -translate-x-1/2 z-20"
+                >
+                    <Button
+                        onClick={handleCamera}
+                        className="bg-orange-500 hover:bg-orange-500/80"
+                    >
                         {camState ? (
-                            <div className="space-x-4">
+                            <div className="space-x-4 flex">
                                 <p>Turn Off</p> <RiCameraOffFill size={20} />
                             </div>
                         ) : (
-                            <div className="space-x-4">
+                            <div className="space-x-4 flex">
                                 <p>Turn On</p> <RiCameraFill size={20} />
                             </div>
                         )}
-                        Camera
                     </Button>
                 </div>
             </main>
