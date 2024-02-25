@@ -1,23 +1,47 @@
 const WebSocket = require("ws");
 
-// Create a WebSocket server instance
 const wss = new WebSocket.Server({ port: 8080 });
+const clients = {};
 
-// Event listener for when a client connects
 wss.on("connection", (ws) => {
-    console.log("Client connected");
+    const id = generateId();
+    clients[id] = ws;
 
-    // Event listener for when a client sends a message
+    ws.send(JSON.stringify({ type: "id", id }));
+
     ws.on("message", (message) => {
-        console.log("Received:", message);
-        // Echo the received message back to the client
-        ws.send(`Echo: ${message}`);
+        message = JSON.parse(message);
+        const senderId = message["id"];
+
+        if (message["type"] === "gameOver") {
+            sendToOthers(senderId, JSON.stringify({ type: "gameOver"}));
+        } else if (message["type"] === "guessLetter") {
+            sendToOthers(senderId, JSON.stringify({ type: "receiveLetter", "letter": message["letter"] }));
+        }
     });
 
-    // Event listener for when a client disconnects
     ws.on("close", () => {
-        console.log("Client disconnected");
+        delete clients[id];
     });
 });
+
+function generateId() {
+    while (true) {
+        const id = Math.random().toString(36).substring(7);
+        if (!clients[id]) {
+            return id;
+        }
+    }
+}
+
+function sendToOthers(senderId, message) {
+    for (const id in clients) {
+        console.log(id);
+        console.log(senderId);
+        if (id !== senderId) {
+            clients[id].send(message);
+        }
+    }
+}
 
 console.log("WebSocket server running on port 8080");

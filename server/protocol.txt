@@ -1,0 +1,17 @@
+Protocol
+
+Game:
+connect <- {"type": "id", "id": string}
+
+receive letter <- {"type": "receiveLetter", "letter": string}
+
+game over -> {"type": "gameOver"}
+
+
+Player:
+
+connect <- {"type": "id", "id": string}
+
+guess letter -> {"type": "guessLetter", "id": string, "letter": string}
+
+game over <- {"type": "gameOver"}
