@@ -17,22 +17,27 @@ import { Signimage, Signpass } from "../components/handimage";
 import Handsigns from "../components/handsigns";
 import { drawHand } from "../utils/handposeutil";
 
+const wsClient = new WebSocket("ws://localhost:8080");
+
 export default function Home() {
     const webcamRef = useRef<Webcam | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const [camState, setCamState] = useState(false);
 
+    /* What the model sees */
     const [sign, setSign] = useState<string>("");
+    /* The current letter being prompted */
     const [signImage, setSignImage] = useState<string>("");
     const [instructionText, setInstructionText] = useState("");
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let signList: string | any[];
-
     let currentSign = 0;
-
     let gamestate = "started";
+
+    let wsFlag = false;
+    let wsId: string;
 
     /**
      * Runs the hand recognition model
@@ -173,8 +178,9 @@ export default function Home() {
                     } else if (gamestate === "played") {
                         /* Reset the sign list if completed */
                         if (currentSign === signList.length) {
-                            handleSignList();
-                            currentSign = 0;
+                            // handleSignList();
+                            // currentSign = 0;
+                            setInstructionText("GAME COMPLETE");
                             return;
                         }
 
@@ -189,7 +195,14 @@ export default function Home() {
                                 estimatedGestures.gestures[maxConfidence].name
                             ) {
                                 currentSign++;
+                                wsClient.send(
+                                    JSON.stringify({
+                                        type: "killDuck",
+                                        id: wsId,
+                                    }),
+                                );
                             }
+
                             setSign(
                                 estimatedGestures.gestures[maxConfidence].name,
                             );
@@ -219,6 +232,32 @@ export default function Home() {
             setCamState(true);
         }
     };
+
+    /* Websocket handling */
+    if (!wsFlag) {
+        wsClient.addEventListener("open", async function open() {
+            console.log("Connected to server");
+        });
+
+        wsClient.addEventListener(
+            "message",
+            function incoming(message: MessageEvent) {
+                console.log("Server raw response:", message.data);
+
+                const parsed = JSON.parse(message.data);
+                wsId = parsed.id;
+
+                if (parsed.type === "startGame") {
+                    console.log("Start Game");
+                } else if (parsed.type === "nextLetter") {
+                    console.log("Next Letter");
+                } else if (parsed.type === "gameOver") {
+                    console.log("Game Over");
+                }
+            },
+        );
+        wsFlag = true;
+    }
 
     return (
         <>
