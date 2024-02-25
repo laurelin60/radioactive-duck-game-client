@@ -154,14 +154,14 @@ export default function Home() {
                     setInstructionText("Waiting for game to start...");
                 }
 
-                if (gamestate === "started") {
-                    handleSignList();
-                    gamestate = "played";
-
-                    setInstructionText(
-                        "make a hand gesture based on letter shown below",
-                    );
-                }
+                // if (gamestate === "started") {
+                //     handleSignList();
+                //     gamestate = "played";
+                //
+                //     setInstructionText(
+                //         "make a hand gesture based on letter shown below",
+                //     );
+                // }
 
                 if (
                     estimatedGestures.gestures !== undefined &&
@@ -257,9 +257,15 @@ export default function Home() {
                 const parsed = JSON.parse(message.data);
                 wsId = parsed.id;
 
-                if (parsed.type === "startGame") {
+                if (parsed.type === "gameStart") {
                     console.log("Start Game");
                     gamestate = "started";
+                    handleSignList();
+                    // gamestate = "played";
+
+                    setInstructionText(
+                        "make a hand gesture based on letter shown below",
+                    );
                 } else if (parsed.type === "nextLetter") {
                     console.log("Next Letter");
                     currentSign++;

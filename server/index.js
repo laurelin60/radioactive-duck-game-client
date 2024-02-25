@@ -16,6 +16,7 @@ wss.on("connection", (ws) => {
         if (message["id"]) {
             senderId = message["id"];
         }
+        console.log(message)
 
         sendToOthers(senderId, JSON.stringify({ type: message["type"] }));
     });
