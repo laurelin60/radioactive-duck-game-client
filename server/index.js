@@ -11,7 +11,12 @@ wss.on("connection", (ws) => {
 
     ws.on("message", (message) => {
         message = JSON.parse(message);
-        const senderId = message["id"];
+        let senderId = "";
+
+        if (message["id"]) {
+            senderId = message["id"];
+        }
+
         sendToOthers(senderId, JSON.stringify({ type: message["type"] }));
     });
 
@@ -31,8 +36,6 @@ function generateId() {
 
 function sendToOthers(senderId, message) {
     for (const id in clients) {
-        console.log(id);
-        console.log(senderId);
         if (id !== senderId) {
             clients[id].send(message);
         }
