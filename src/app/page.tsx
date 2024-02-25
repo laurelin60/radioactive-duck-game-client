@@ -3,23 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-// import {
-//     Box,
-//     Button,
-//     Container,
-//     Heading,
-//     Image,
-//     Stack,
-//     Text,
-//     VStack,
-// } from "@chakra-ui/react";
-
 // @ts-expect-error can't find declaration file
 import * as handpose from "@tensorflow-models/handpose";
-// import * as tf from "@tensorflow/tfjs";
 import * as fp from "fingerpose";
-
-// import "../styles/App.css"
 
 import "@tensorflow/tfjs-backend-webgl";
 
@@ -31,37 +17,39 @@ import Handsigns from "../components/handsigns";
 import { drawHand } from "../utils/handposeutil";
 
 export default function Home() {
-    const webcamRef = useRef(null);
-    const canvasRef = useRef(null);
+    const webcamRef = useRef<Webcam | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    const [camState, setCamState] = useState(false);
+    const [camState, setCamState] = useState(true);
 
     const [sign, setSign] = useState<string | null>(null);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let signList: string | any[] = [];
+    const [signList, setSignList] = useState<string | any[]>([]);
+
     let currentSign = 0;
 
     let gamestate = "started";
 
-    async function runHandpose() {
-        console.log("in handpose");
+    /**
+     * Runs the hand recognition model
+     * 1. Inits the model from tensorflow.js
+     * 2. Sets up sign list
+     * 3. Runs ML model every X milliseconds
+     */
+    const runHandpose = async () => {
         const net = await handpose.load();
-        _signList();
-
-        // window.requestAnimationFrame(loop);
+        handleSignList();
 
         setInterval(() => {
-            void detect(net);
+            detect(net);
         }, 150);
-    }
+    };
 
-    function _signList() {
-        console.log("in signlist");
-        signList = generateSigns();
-    }
+    const handleSignList = () => {
+        setSignList(shuffle(Signpass));
+    };
 
-    /* any is used to avoid errors */
+    /* any is used to avoid errors w/ build */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function shuffle(a: { src: any; alt: string }[]) {
         for (let i = a.length - 1; i > 0; i--) {
@@ -71,37 +59,34 @@ export default function Home() {
         return a;
     }
 
-    function generateSigns() {
-        const password = shuffle(Signpass);
-        return password;
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function detect(net: any) {
-        // Check data is available
+        /* Check if webcam is available */
         if (
-            typeof webcamRef.current !== "undefined" &&
-            webcamRef.current !== null &&
+            webcamRef.current &&
+            webcamRef.current.video &&
             webcamRef.current.video.readyState === 4
         ) {
-            // Get Video Properties
+            /* Get video properties */
             const video = webcamRef.current.video;
             const videoWidth = webcamRef.current.video.videoWidth;
             const videoHeight = webcamRef.current.video.videoHeight;
 
-            // Set video width
+            /* Set video width */
             webcamRef.current.video.width = videoWidth;
             webcamRef.current.video.height = videoHeight;
 
-            // Set canvas height and width
-            canvasRef.current.width = videoWidth;
-            canvasRef.current.height = videoHeight;
+            /* Set canvas height and width */
+            if (canvasRef.current) {
+                canvasRef.current.width = videoWidth;
+                canvasRef.current.height = videoHeight;
+            }
 
-            // Make Detections
+            /* Make Detections */
             const hand = await net.estimateHands(video);
 
             if (hand.length > 0) {
-                //loading the fingerpose model
+                /* Load the fingerpose model */
                 const GE = new fp.GestureEstimator([
                     fp.Gestures.ThumbsUpGesture,
                     Handsigns.aSign,
@@ -132,16 +117,13 @@ export default function Home() {
                     Handsigns.zSign,
                 ]);
 
-                const estimatedGestures = await GE.estimate(
-                    hand[0].landmarks,
-                    6.5,
-                );
+                const estimatedGestures = GE.estimate(hand[0].landmarks, 6.5);
                 // document.querySelector('.pose-data').innerHTML =JSON.stringify(estimatedGestures.poseData, null, 2);
 
-                // if (gamestate === "started") {
-                //     document.querySelector("#app-title").innerText =
-                //         "Make a 👍 gesture with your hand to start";
-                // }
+                if (gamestate === "started") {
+                    // document.querySelector("#app-title").innerText =
+                    //     "Make a 👍 gesture with your hand to start";
+                }
 
                 if (
                     estimatedGestures.gestures !== undefined &&
@@ -160,12 +142,11 @@ export default function Home() {
                             "thumbs_up" &&
                         gamestate !== "played"
                     ) {
-                        _signList();
+                        handleSignList();
                         gamestate = "played";
-
-                        document
-                            .getElementById("emojimage")!
-                            .classList.add("play");
+                        // document
+                        //     .getElementById("emojimage")
+                        //     .classList.add("play");
                         // document.querySelector(".tutor-text").innerText =
                         //     "make a hand gesture based on letter shown below";
                     } else if (gamestate === "played") {
@@ -173,7 +154,7 @@ export default function Home() {
 
                         //looping the sign list
                         if (currentSign === signList.length) {
-                            _signList();
+                            handleSignList();
                             currentSign = 0;
                             return;
                         }
@@ -186,19 +167,18 @@ export default function Home() {
                             typeof signList[currentSign].src.src === "string" ||
                             signList[currentSign].src.src instanceof String
                         ) {
-                            document
-                                .getElementById("emojimage")!
-                                .setAttribute(
-                                    "src",
-                                    signList[currentSign].src.src,
-                                );
+                            // document
+                            //     .getElementById("emojimage")
+                            //     .setAttribute(
+                            //         "src",
+                            //         signList[currentSign].src.src,
+                            //     );
                             if (
                                 signList[currentSign].alt ===
                                 estimatedGestures.gestures[maxConfidence].name
                             ) {
                                 currentSign++;
                             }
-
                             setSign(
                                 estimatedGestures.gestures[maxConfidence].name,
                             );
@@ -208,23 +188,26 @@ export default function Home() {
                     }
                 }
             }
-            // Draw hand lines
-            const ctx = canvasRef.current.getContext("2d");
-            drawHand(hand, ctx);
+
+            /* Draw hand lines */
+            if (canvasRef.current) {
+                const ctx = canvasRef.current.getContext("2d");
+                drawHand(hand, ctx);
+            }
         }
     }
-
-    //   if (sign) {
-    //     console.log(sign, Signimage[sign])
-    //   }
 
     useEffect(() => {
         runHandpose();
     }, []);
 
-    function handleCamera() {
-        setCamState((prevState) => !prevState);
-    }
+    const handleCamera = () => {
+        if (camState) {
+            setCamState(false);
+        } else {
+            setCamState(true);
+        }
+    };
 
     return (
         <>
@@ -271,16 +254,31 @@ export default function Home() {
                         src={""}
                         alt="image"
                     />
-                    {/* <pre className="pose-data" color="white" style={{position: 'fixed', top: '150px', left: '10px'}} >Pose data</pre> */}
+
+                    {/* <pre
+                        className="pose-data"
+                        color="white"
+                        style={{
+                            position: "fixed",
+                            top: "150px",
+                            left: "10px",
+                        }}
+                    >
+                        Pose data
+                    </pre> */}
                 </div>
 
                 <div id="start-button" className="flex-center gap-4 flex-row">
                     <Button onClick={handleCamera} className="bg-orange-500">
                         {camState ? (
-                            <RiCameraFill size={20} />
+                            <div className="space-x-4">
+                                <p>Turn Off</p> <RiCameraOffFill size={20} />
+                            </div>
                         ) : (
-                            <RiCameraOffFill size={20} />
-                        )}{" "}
+                            <div className="space-x-4">
+                                <p>Turn On</p> <RiCameraFill size={20} />
+                            </div>
+                        )}
                         Camera
                     </Button>
                 </div>
@@ -288,22 +286,3 @@ export default function Home() {
         </>
     );
 }
-
-// export default function Home() {
-//     // const { getUser } = getKindeServerSession();
-//     // const user = await getUser();
-
-//     // const dbUser = user
-//     //     ? await db.user.findFirst({
-//     //           where: {
-//     //               id: user?.id,
-//     //           },
-//     //       })
-//     //     : null;
-
-//     return (
-//         <main className="wrapper flex-center text-3xl md:text-5xl font-semibold min-h-[calc(100vh-6rem)]">
-
-//         </main>
-//     );
-// }
