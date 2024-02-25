@@ -17,6 +17,8 @@ On next letter (duck dies or escapes, instructs player to switch letters)
 On game over
 -> {"type": "gameOver", "id": "123"}
 
+# <- is receive (ie player receives type, id on connect)
+
 ### Player:
 
 On connect
