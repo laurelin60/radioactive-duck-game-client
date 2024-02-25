@@ -14,7 +14,6 @@ On instruction to kill dick
 On next letter (duck dies or escapes, instructs player to switch letters)
 -> {"type": "nextLetter", "id": "123"}
 
-
 On game over
 -> {"type": "gameOver", "id": "123"}
 
@@ -24,7 +23,7 @@ On connect
 <- {"type": "id", "id": string}
 
 On start game
--> {"type": "startGame", "id": "123"}
+<- {"type": "startGame"}
 
 On instruction to kill duck
 -> {"type": "killDuck"}
