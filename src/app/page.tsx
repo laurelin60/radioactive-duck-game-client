@@ -175,51 +175,59 @@ export default function Home() {
                         Math.max.apply(undefined, confidence),
                     );
 
-                    // /* Check for thumb emoji to begin game */
-                    // if (
-                    //     estimatedGestures.gestures[maxConfidence].name ===
-                    //         "thumbs_up" &&
-                    //     gamestate !== "played"
-                    // ) {
-                    //     handleSignList();
-                    //     gamestate = "played";
-
-                    //     setInstructionText(
-                    //         "make a hand gesture based on letter shown below",
-                    //     );
-                    // } else if (gamestate === "played") {
-                    /* Reset the sign list if completed */
-                    if (currentSign === signList.length) {
-                        // handleSignList();
-                        // currentSign = 0;
-                        setInstructionText("GAME COMPLETE");
-                        return;
-                    }
-
-                    /* Gameplay state */
+                    /* Check for thumb emoji to begin game */
                     if (
-                        typeof signList[currentSign].src.src === "string" ||
-                        signList[currentSign].src.src instanceof String
+                        estimatedGestures.gestures[maxConfidence].name ===
+                            "thumbs_up" &&
+                        gamestate !== "played"
                     ) {
-                        setSignImage(signList[currentSign].src.src);
-                        if (
-                            signList[currentSign].alt ===
-                            estimatedGestures.gestures[maxConfidence].name
-                        ) {
-                            // currentSign++;
-                            wsClient.send(
-                                JSON.stringify({
-                                    type: "killDuck",
-                                    id: wsId,
-                                }),
-                            );
+                        handleSignList();
+                        gamestate = "played";
+                        wsClient.send(
+                            JSON.stringify({
+                                type: "startGame",
+                                id: wsId,
+                            }),
+                        );
+
+                        setInstructionText(
+                            "make a hand gesture based on letter shown below",
+                        );
+                    } else if (gamestate === "played") {
+                        /* Reset the sign list if completed */
+                        if (currentSign === signList.length) {
+                            // handleSignList();
+                            // currentSign = 0;
+                            setInstructionText("GAME COMPLETE");
+                            return;
                         }
 
-                        setSign(estimatedGestures.gestures[maxConfidence].name);
+                        /* Gameplay state */
+                        if (
+                            typeof signList[currentSign].src.src === "string" ||
+                            signList[currentSign].src.src instanceof String
+                        ) {
+                            setSignImage(signList[currentSign].src.src);
+                            if (
+                                signList[currentSign].alt ===
+                                estimatedGestures.gestures[maxConfidence].name
+                            ) {
+                                // currentSign++;
+                                wsClient.send(
+                                    JSON.stringify({
+                                        type: "killDuck",
+                                        id: wsId,
+                                    }),
+                                );
+                            }
+
+                            setSign(
+                                estimatedGestures.gestures[maxConfidence].name,
+                            );
+                        }
+                    } else if (gamestate === "finished") {
+                        return;
                     }
-                    // } else if (gamestate === "finished") {
-                    //     return;
-                    // }
                 }
             }
 
