@@ -247,7 +247,7 @@ export default function Home() {
 
                         {/* At bottom of page, indicates what the model is "seeing" */}
                         {sign ? (
-                            <div className="absolute flex-center flex-col mx-auto right-[calc(50% - 50px)] bottom-[100px] text-center z-50 mx-auto left-1/2 -translate-x-1/2">
+                            <div className="absolute flex-center flex-col mx-auto right-[calc(50% - 50px)] bottom-[140px] text-center z-50 mx-auto left-1/2 -translate-x-1/2">
                                 <div className="text-white text-lg mb-1">
                                     detected gestures
                                 </div>
