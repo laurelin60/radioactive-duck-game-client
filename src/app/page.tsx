@@ -127,7 +127,7 @@ export default function Home() {
                     Handsigns.jSign,
                     Handsigns.kSign,
                     Handsigns.lSign,
-                    Handsigns.mSign,
+                    // Handsigns.mSign,
                     Handsigns.nSign,
                     Handsigns.oSign,
                     Handsigns.pSign,
@@ -140,7 +140,7 @@ export default function Home() {
                     Handsigns.wSign,
                     Handsigns.xSign,
                     Handsigns.ySign,
-                    Handsigns.zSign,
+                    // Handsigns.zSign,
                 ]);
 
                 const estimatedGestures = GE.estimate(hand[0].landmarks, 6.5);
