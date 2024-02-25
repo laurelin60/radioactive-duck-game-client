@@ -12,12 +12,7 @@ wss.on("connection", (ws) => {
     ws.on("message", (message) => {
         message = JSON.parse(message);
         const senderId = message["id"];
-
-        if (message["type"] === "gameOver") {
-            sendToOthers(senderId, JSON.stringify({ type: "gameOver"}));
-        } else if (message["type"] === "guessLetter") {
-            sendToOthers(senderId, JSON.stringify({ type: "receiveLetter", "letter": message["letter"] }));
-        }
+        sendToOthers(senderId, JSON.stringify({ type: message["type"] }));
     });
 
     ws.on("close", () => {

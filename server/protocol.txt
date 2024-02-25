@@ -1,17 +1,36 @@
 Protocol
 
-Game:
-connect <- {"type": "id", "id": string}
+### Game:
 
-receive letter <- {"type": "receiveLetter", "letter": string}
+On connect
+<- {"type": "id", "id": string}
 
-game over -> {"type": "gameOver"}
+On start game
+-> {"type": "startGame", "id": "123"}
+
+On instruction to kill dick
+<- {"type": "killDuck" "id": "123"}
+
+On next letter (duck dies or escapes, instructs player to switch letters)
+-> {"type": "nextLetter", "id": "123"}
 
 
-Player:
+On game over
+-> {"type": "gameOver", "id": "123"}
 
-connect <- {"type": "id", "id": string}
+### Player:
 
-guess letter -> {"type": "guessLetter", "id": string, "letter": string}
+On connect
+<- {"type": "id", "id": string}
 
-game over <- {"type": "gameOver"}
+On start game
+-> {"type": "startGame", "id": "123"}
+
+On instruction to kill duck
+-> {"type": "killDuck"}
+
+On next letter
+<- {"type": "nextLetter"}
+
+On game over
+<- {"type": "gameOver"}
