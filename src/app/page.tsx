@@ -49,6 +49,7 @@ export default function Home() {
         setInstructionText("Loading models...");
         const net = await handpose.load();
         handleSignList();
+        gamestate = "started";
 
         setInterval(() => {
             detect(net);
@@ -145,23 +146,23 @@ export default function Home() {
                 const estimatedGestures = GE.estimate(hand[0].landmarks, 6.5);
                 // document.querySelector('.pose-data').innerHTML =JSON.stringify(estimatedGestures.poseData, null, 2);
 
-                // if (gamestate === "started") {
-                //     setInstructionText(
-                //         "Make a 👍 gesture with your hand to start",
-                //     );
-                // }
-                if (gamestate === "unstarted") {
-                    setInstructionText("Waiting for game to start...");
-                }
-
                 if (gamestate === "started") {
-                    handleSignList();
-                    gamestate = "played";
-
                     setInstructionText(
-                        "make a hand gesture based on letter shown below",
+                        "Make a 👍 gesture with your hand to start",
                     );
                 }
+                // if (gamestate === "unstarted") {
+                //     setInstructionText("Waiting for game to start...");
+                // }
+
+                // if (gamestate === "started") {
+                //     handleSignList();
+                //     gamestate = "played";
+
+                //     setInstructionText(
+                //         "make a hand gesture based on letter shown below",
+                //     );
+                // }
 
                 if (
                     estimatedGestures.gestures !== undefined &&
