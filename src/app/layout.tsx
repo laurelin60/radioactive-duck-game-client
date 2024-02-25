@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { /*Inter, */ Orbitron } from "next/font/google";
 
 import "./globals.css";
 
@@ -6,7 +6,12 @@ import Footer from "@/components/Footer";
 import Providers from "@/components/Providers";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({
+// const inter = Inter({
+//     subsets: ["latin"],
+//     variable: "--font-sans",
+// });
+
+const orbitron = Orbitron({
     subsets: ["latin"],
     variable: "--font-sans",
 });
@@ -25,7 +30,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <Providers>
-                <body className={cn(inter.className, "bg-[#5784BA]")}>
+                <body className={cn(orbitron.className, "bg-[#5784BA]")}>
                     <main>{children}</main>
                     <Footer />
                 </body>
