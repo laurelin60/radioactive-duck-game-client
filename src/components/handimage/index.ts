@@ -16,8 +16,8 @@ import H_sign from "./H.svg";
 import H_hand from "./Hhand.svg";
 import I_sign from "./I.svg";
 import I_hand from "./Ihand.svg";
-import J_sign from "./J.svg";
-import J_hand from "./Jhand.svg";
+// import J_sign from "./J.svg";
+// import J_hand from "./Jhand.svg";
 import K_sign from "./K.svg";
 import K_hand from "./Khand.svg";
 import L_sign from "./L.svg";
@@ -48,8 +48,9 @@ import X_sign from "./X.svg";
 import X_hand from "./Xhand.svg";
 import Y_sign from "./Y.svg";
 import Y_hand from "./Yhand.svg";
-import Z_sign from "./Z.svg";
-import Z_hand from "./Zhand.svg";
+
+// import Z_sign from "./Z.svg";
+// import Z_hand from "./Zhand.svg";
 
 export const Signimage: Record<string, unknown> = {
     A: A_sign,
@@ -61,7 +62,7 @@ export const Signimage: Record<string, unknown> = {
     G: G_sign,
     H: H_sign,
     I: I_sign,
-    J: J_sign,
+    // J: J_sign,
     K: K_sign,
     L: L_sign,
     M: M_sign,
@@ -77,7 +78,7 @@ export const Signimage: Record<string, unknown> = {
     W: W_sign,
     X: X_sign,
     Y: Y_sign,
-    Z: Z_sign,
+    // Z: Z_sign,
 };
 
 export const Signpass = [
@@ -117,10 +118,10 @@ export const Signpass = [
         src: I_hand,
         alt: "I",
     },
-    {
-        src: J_hand,
-        alt: "J",
-    },
+    // {
+    //     src: J_hand,
+    //     alt: "J",
+    // },
     {
         src: K_hand,
         alt: "K",
@@ -181,8 +182,8 @@ export const Signpass = [
         src: Y_hand,
         alt: "Y",
     },
-    {
-        src: Z_hand,
-        alt: "Z",
-    },
+    // {
+    //     src: Z_hand,
+    //     alt: "Z",
+    // },
 ];
