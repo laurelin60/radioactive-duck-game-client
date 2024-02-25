@@ -34,7 +34,7 @@ export default function Home() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let signList: string | any[];
     let currentSign = 0;
-    let gamestate = "started";
+    let gamestate = "unstarted";
 
     let wsFlag = false;
     let wsId: string;
@@ -145,9 +145,21 @@ export default function Home() {
                 const estimatedGestures = GE.estimate(hand[0].landmarks, 6.5);
                 // document.querySelector('.pose-data').innerHTML =JSON.stringify(estimatedGestures.poseData, null, 2);
 
+                // if (gamestate === "started") {
+                //     setInstructionText(
+                //         "Make a 👍 gesture with your hand to start",
+                //     );
+                // }
+                if (gamestate === "unstarted") {
+                    setInstructionText("Waiting for game to start...");
+                }
+
                 if (gamestate === "started") {
+                    handleSignList();
+                    gamestate = "played";
+
                     setInstructionText(
-                        "Make a 👍 gesture with your hand to start",
+                        "make a hand gesture based on letter shown below",
                     );
                 }
 
@@ -163,53 +175,51 @@ export default function Home() {
                         Math.max.apply(undefined, confidence),
                     );
 
-                    /* Check for thumb emoji to begin game */
-                    if (
-                        estimatedGestures.gestures[maxConfidence].name ===
-                            "thumbs_up" &&
-                        gamestate !== "played"
-                    ) {
-                        handleSignList();
-                        gamestate = "played";
+                    // /* Check for thumb emoji to begin game */
+                    // if (
+                    //     estimatedGestures.gestures[maxConfidence].name ===
+                    //         "thumbs_up" &&
+                    //     gamestate !== "played"
+                    // ) {
+                    //     handleSignList();
+                    //     gamestate = "played";
 
-                        setInstructionText(
-                            "make a hand gesture based on letter shown below",
-                        );
-                    } else if (gamestate === "played") {
-                        /* Reset the sign list if completed */
-                        if (currentSign === signList.length) {
-                            // handleSignList();
-                            // currentSign = 0;
-                            setInstructionText("GAME COMPLETE");
-                            return;
-                        }
-
-                        /* Gameplay state */
-                        if (
-                            typeof signList[currentSign].src.src === "string" ||
-                            signList[currentSign].src.src instanceof String
-                        ) {
-                            setSignImage(signList[currentSign].src.src);
-                            if (
-                                signList[currentSign].alt ===
-                                estimatedGestures.gestures[maxConfidence].name
-                            ) {
-                                // currentSign++;
-                                wsClient.send(
-                                    JSON.stringify({
-                                        type: "killDuck",
-                                        id: wsId,
-                                    }),
-                                );
-                            }
-
-                            setSign(
-                                estimatedGestures.gestures[maxConfidence].name,
-                            );
-                        }
-                    } else if (gamestate === "finished") {
+                    //     setInstructionText(
+                    //         "make a hand gesture based on letter shown below",
+                    //     );
+                    // } else if (gamestate === "played") {
+                    /* Reset the sign list if completed */
+                    if (currentSign === signList.length) {
+                        // handleSignList();
+                        // currentSign = 0;
+                        setInstructionText("GAME COMPLETE");
                         return;
                     }
+
+                    /* Gameplay state */
+                    if (
+                        typeof signList[currentSign].src.src === "string" ||
+                        signList[currentSign].src.src instanceof String
+                    ) {
+                        setSignImage(signList[currentSign].src.src);
+                        if (
+                            signList[currentSign].alt ===
+                            estimatedGestures.gestures[maxConfidence].name
+                        ) {
+                            // currentSign++;
+                            wsClient.send(
+                                JSON.stringify({
+                                    type: "killDuck",
+                                    id: wsId,
+                                }),
+                            );
+                        }
+
+                        setSign(estimatedGestures.gestures[maxConfidence].name);
+                    }
+                    // } else if (gamestate === "finished") {
+                    //     return;
+                    // }
                 }
             }
 
@@ -249,6 +259,7 @@ export default function Home() {
 
                 if (parsed.type === "startGame") {
                     console.log("Start Game");
+                    gamestate = "started";
                 } else if (parsed.type === "nextLetter") {
                     console.log("Next Letter");
                     currentSign++;
