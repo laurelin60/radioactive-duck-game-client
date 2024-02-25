@@ -222,7 +222,7 @@ export default function Home() {
 
     return (
         <>
-            <main className="bg-[#5784BA] min-h-[100vh] max-h-[100vh]">
+            <main className="min-h-[100vh] max-h-[100vh]">
                 <div className="flex items-center flex-col h-full wrapper py-0">
                     <div className="z-10 pt-24">
                         <h1 className="text-4xl text-center font-bold">
@@ -299,7 +299,7 @@ export default function Home() {
 
                 <div
                     id="start-button"
-                    className="flex gap-8 flex-row fixed self-center bottom-10 mx-auto left-1/2 -translate-x-1/2 z-20"
+                    className="flex gap-8 flex-row fixed self-center bottom-20 mx-auto left-1/2 -translate-x-1/2 z-20"
                 >
                     <Button
                         onClick={handleCamera}

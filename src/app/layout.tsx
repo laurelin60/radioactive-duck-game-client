@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import "./globals.css";
 
+import Footer from "@/components/Footer";
 import Providers from "@/components/Providers";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -11,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-    title: "kTemp",
-    description: "A template repository with a setup I love",
+    title: "Radioactive Duck Game - Client",
+    description: "A game that blends ASL, Duck Hunt, and Radioactive elements",
     icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
@@ -24,8 +25,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <Providers>
-                <body className={inter.className}>
+                <body className={cn(inter.className, "bg-[#5784BA]")}>
                     <main>{children}</main>
+                    <Footer />
                 </body>
             </Providers>
         </html>
