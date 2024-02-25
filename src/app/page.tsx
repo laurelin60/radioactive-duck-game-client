@@ -251,6 +251,7 @@ export default function Home() {
                     console.log("Start Game");
                 } else if (parsed.type === "nextLetter") {
                     console.log("Next Letter");
+                    currentSign++;
                 } else if (parsed.type === "gameOver") {
                     console.log("Game Over");
                 }
