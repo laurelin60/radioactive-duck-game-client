@@ -206,13 +206,13 @@ export default function Home() {
                             signList[currentSign].alt ===
                             estimatedGestures.gestures[maxConfidence].name
                         ) {
-                            // currentSign++;
                             wsClient.send(
                                 JSON.stringify({
                                     type: "killDuck",
                                     id: wsId,
                                 }),
                             );
+                            currentSign++;
                         }
 
                         setSign(estimatedGestures.gestures[maxConfidence].name);
@@ -389,11 +389,11 @@ export default function Home() {
 
                                 {/* Game embed */}
                                 <div className="w-gameWidth h-gameHeight bg-green-500 overflow-auto flex-center">
-                                    <iframe
+                                    {/* <iframe
                                         allow="autoplay; fullscreen; geolocation; microphone; camera; midi"
                                         src="http://localhost:8000/index.html"
                                         className="w-gameWidth h-gameHeightFooter overflow-auto"
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                         </div>
