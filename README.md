@@ -32,4 +32,4 @@
   <img width="1728" alt="Splash" src="https://github.com/laurelin60/radioactive-duck-game-client/assets/100006999/4a3e2689-1cb7-4187-914c-4ce470d69c02">
 </p>
 
-See the game client here: [RDG Game Client](https://github.com/laurelin60/radioactive-duck-game)
+See the Unity game client here: [RDG Unity Game](https://github.com/laurelin60/radioactive-duck-game)
