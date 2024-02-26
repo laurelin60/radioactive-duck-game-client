@@ -18,7 +18,7 @@
   <br>
 </p>
 
-<!-- ### 🏅 HACKATHON — WINNING CATEGORY (ex: Best Use of X) -->
+### 🏅 FullyHacks 2024 — Best AI/ML Project
 
 <br>
 
